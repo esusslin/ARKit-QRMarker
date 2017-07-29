@@ -13,10 +13,11 @@ import Vision
 class ViewController: UIViewController, ARSCNViewDelegate {
     
     private var requests = [VNRequest]()
+    private var qrCode = QRCode()
     private lazy var drawLayer: CAShapeLayer = {
         let drawLayer = CAShapeLayer()
-        self.view.layer.addSublayer(drawLayer)
-        drawLayer.frame = self.view.bounds
+        self.sceneView.layer.addSublayer(drawLayer)
+        drawLayer.frame = self.sceneView.bounds
         drawLayer.strokeColor = UIColor.green.cgColor
         drawLayer.lineWidth = 3
         drawLayer.lineJoin = kCALineJoinMiter
@@ -50,7 +51,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var topRightPointNode = SCNNode()
     var bottomLeftPointNode = SCNNode()
     var bottomRightPointNode = SCNNode()
-    var axesNode = createAxesNode(quiverLength: 0.1, quiverThickness: 1.0)
+    var axesNode = createAxesNode(quiverLength: 0.06, quiverThickness: 1.0)
     var earthNode = SCNNode()
     var nodes = [SCNNode]()
     
@@ -65,6 +66,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScene()
+        setupNotifications()
         setupFocusSquare()
         setupVision()
         setupNodes()
@@ -90,6 +92,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     var screenCenter: CGPoint?
     
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(fixSceneViewPosition), name: NSNotification.Name.UIApplicationDidChangeStatusBarOrientation, object: nil)
+    }
+    
     func setupScene() {
         // set up sceneView
         sceneView.delegate = self
@@ -100,6 +106,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.preferredFramesPerSecond = 60
         sceneView.contentScaleFactor = 1.3
         //sceneView.showsStatistics = true
+        
+        fixSceneViewPosition()
         
         //enableEnvironmentMapWithIntensity(25.0)
         
@@ -126,16 +134,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             worldSessionConfig.planeDetection = .horizontal
             session.run(worldSessionConfig, options: [.resetTracking, .removeExistingAnchors])
         }
-        
-        // reset timer
-        //        if trackingFallbackTimer != nil {
-        //            trackingFallbackTimer!.invalidate()
-        //            trackingFallbackTimer = nil
-        //        }
-        //
-        //        textManager.scheduleMessage("FIND A SURFACE TO PLACE AN OBJECT",
-        //                                    inSeconds: 7.5,
-        //                                    messageType: .planeEstimation)
     }
     
     // MARK: - SCNNodes
@@ -149,6 +147,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         nodes.append(topRightPointNode)
         bottomLeftPointNode.name = "Bottom Left"
         bottomLeftPointNode.geometry = self.pointGeom
+        let constraint = SCNLookAtConstraint.init(target: self.topLeftPointNode)
+        constraint.worldUp = SCNUtils.getNormal(v0: self.topRightPointNode.position, v1: self.topLeftPointNode.position, v2:  self.bottomLeftPointNode.position)
+        bottomLeftPointNode.constraints = [constraint]
         nodes.append(bottomLeftPointNode)
         
         // create and add a light to the scene
@@ -227,75 +228,77 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // Loop through the results found.
             let path = CGMutablePath()
             
-            guard let frame = self.sceneView.session.currentFrame else {
-                return
-            }
-            
-            guard let featurePointCloud = frame.rawFeaturePoints else {
+            guard self.sceneView.session.currentFrame != nil else {
                 return
             }
             
             for result in results {
                 guard let barcode = result as? VNBarcodeObservation else { continue }
-                let topLeft = (name: "Top Left", position: self.convert(point: barcode.topLeft))
-                path.move(to: topLeft.position)
-                let topRight = (name: "Top Right", position: self.convert(point: barcode.topRight))
-                path.addLine(to: topRight.position)
-                let bottomRight = (name: "Bottom Right", position: self.convert(point: barcode.bottomRight))
-                path.addLine(to: bottomRight.position)
-                let bottomLeft = (name: "Bottom Left", position: self.convert(point: barcode.bottomLeft))
-                path.addLine(to: bottomLeft.position)
-                path.addLine(to: topLeft.position)
+                self.qrCode.topLeftCorner.screenPosition = self.convert(point: barcode.topLeft)
+                path.move(to: self.qrCode.topLeftCorner.screenPosition)
+                self.qrCode.topRightCorner.screenPosition = self.convert(point: barcode.topRight)
+                path.addLine(to: self.qrCode.topRightCorner.screenPosition)
+                self.qrCode.bottomRightCorner.screenPosition = self.convert(point: barcode.bottomRight)
+                path.addLine(to: self.qrCode.bottomRightCorner.screenPosition)
+                self.qrCode.bottomLeftCorner.screenPosition = self.convert(point: barcode.bottomLeft)
+                path.addLine(to: self.qrCode.bottomLeftCorner.screenPosition)
+                path.addLine(to: self.qrCode.topLeftCorner.screenPosition)
                 
-                for i in 0 ..< featurePointCloud.count {
-                    let featurePointPosition = SCNVector3(x: featurePointCloud.points[i].x, y: featurePointCloud.points[i].y, z: featurePointCloud.points[i].z)
-                    
-                    //    v1 --------------v0
-                    //    |             __/
-                    //    |          __/
-                    //    |       __/
-                    //    |    __/
-                    //    | __/
-                    //    v2
-                    
-                    self.showNodeAtQR(featurePointPosition: featurePointPosition, qrPosition: topRight)
-                    self.showNodeAtQR(featurePointPosition: featurePointPosition, qrPosition: topLeft)
-                    self.showNodeAtQR(featurePointPosition: featurePointPosition, qrPosition: bottomLeft)
-                }
+                //    v1 --------------v0
+                //    |             __/
+                //    |          __/
+                //    |       __/
+                //    |    __/
+                //    | __/
+                //    v2
             }
             self.drawLayer.path = path
         }
     }
+    
     private func convert(point: CGPoint) -> CGPoint {
-        return CGPoint(x: point.x * view.bounds.size.width,
-                       y: (1 - point.y) * view.bounds.size.height)
+        var convertedPoint = CGPoint()
+        let height = sceneView.bounds.size.height
+        let width = sceneView.bounds.size.width
+        switch UIApplication.shared.statusBarOrientation {
+        case .portrait:
+            convertedPoint.x = point.x * width
+            convertedPoint.y = (1 - point.y) * height
+        case .portraitUpsideDown:
+            convertedPoint.x = (1 - point.x) * width
+            convertedPoint.y = point.y * height
+        case .landscapeLeft:
+            convertedPoint.x = point.y * width
+            convertedPoint.y = point.x * height
+        case .landscapeRight:
+            convertedPoint.x = (1 - point.y) * width
+            convertedPoint.y = (1 - point.x) * height
+        case .unknown:
+            convertedPoint.x = point.x * width
+            convertedPoint.y = (1 - point.y) * height
+        }
+        return convertedPoint
     }
     
-    private func showNodeAtQR(featurePointPosition: SCNVector3, qrPosition: (name: String, position: CGPoint)) {
-        
-        let featurePointScreenXPosition = self.sceneView.projectPoint(featurePointPosition).x
-        let featurePointScreenYPosition = self.sceneView.projectPoint(featurePointPosition).y
-        let delta: Float = 10
-        
-        if (featurePointScreenXPosition > (Float(qrPosition.position.x) - delta) && featurePointScreenXPosition <= (Float(qrPosition.position.x) + delta) && featurePointScreenYPosition > (Float(qrPosition.position.y) - delta) && featurePointScreenYPosition <= (Float(qrPosition.position.y) + delta)) {
-            for node in nodes {
-                if node.name == qrPosition.name {
-                    node.removeFromParentNode()
-                    node.position = featurePointPosition
-                    self.sceneView.scene.rootNode.addChildNode(node)
-                }
-                if node.name == "Bottom Left" {
-                    let constraint = SCNLookAtConstraint.init(target: self.sceneView.scene.rootNode.childNode(withName: "Top Left", recursively: false))
-                    constraint.worldUp = SCNUtils.getNormal(v0: self.topRightPointNode.position, v1: self.topLeftPointNode.position, v2:  self.bottomLeftPointNode.position)
-                    node.constraints = [constraint]
-                }
+    // MARK: - Add nodes to SceneView
+    
+    private func addNodeAtQRCorner(qrCorner: QRCode.corner) {
+        for node in nodes {
+            if node.name == qrCorner.name {
+                node.removeFromParentNode()
+                node.position = (self.sceneView.hitTestWithFeatures(qrCorner.screenPosition).first?.position)!
+                self.sceneView.scene.rootNode.addChildNode(node)
             }
         }
     }
     
     @objc private func addEarthNode() {
-        self.sceneView.scene.rootNode.childNode(withName: "Bottom Left", recursively: false)?.addChildNode(self.axesNode)
-        self.sceneView.scene.rootNode.childNode(withName: "Bottom Left", recursively: false)?.addChildNode(self.earthNode)
+        addNodeAtQRCorner(qrCorner: qrCode.bottomLeftCorner)
+        addNodeAtQRCorner(qrCorner: qrCode.topLeftCorner)
+        addNodeAtQRCorner(qrCorner: qrCode.topRightCorner)
+        
+        bottomLeftPointNode.addChildNode(axesNode)
+        bottomLeftPointNode.addChildNode(earthNode)
     }
     
     // MARK: - Focus Square
@@ -328,7 +331,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         requestOptions = [.cameraIntrinsics: self.session.currentFrame?.camera.intrinsics as Any]
         
         
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: 6, options: requestOptions)
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: CGImagePropertyOrientation(rawValue: 6)!, options: requestOptions)
         
         do {
             try imageRequestHandler.perform(self.requests)
@@ -406,6 +409,34 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
         
         return (nil, nil, false)
+    }
+    
+    // MARK: - Fix view on orientation change
+    
+    @objc func fixSceneViewPosition() {
+        let viewWidth = self.view.bounds.width
+        let viewHeight = self.view.bounds.height
+        let sceneViewPortraitWidth = viewWidth
+        let sceneViewPortraitHeight = viewWidth / 9 * 16
+        let sceneViewLandscapeWidth = viewHeight / 9 * 16
+        let sceneViewLandscapeHeight = viewHeight
+        
+        let landscapeWidthDifference = abs(viewWidth - sceneViewLandscapeWidth)
+        let portraitHeightDifference = abs(viewHeight - sceneViewPortraitHeight)
+        
+        switch UIApplication.shared.statusBarOrientation {
+        case .portrait:
+            self.sceneView.bounds = CGRect(x: 0, y: -portraitHeightDifference / 2, width: sceneViewPortraitWidth, height: sceneViewPortraitHeight)
+        case .portraitUpsideDown:
+            self.sceneView.bounds = CGRect(x: 0, y: -portraitHeightDifference / 2, width: sceneViewPortraitWidth, height: sceneViewPortraitHeight)
+        case .landscapeLeft:
+            self.sceneView.bounds = CGRect(x: -landscapeWidthDifference / 2, y: 0, width: sceneViewLandscapeWidth, height: sceneViewLandscapeHeight)
+        case .landscapeRight:
+            self.sceneView.bounds = CGRect(x: -landscapeWidthDifference / 2, y: 0, width: sceneViewLandscapeWidth, height: sceneViewLandscapeHeight)
+        case .unknown: break
+        }
+        self.sceneView.frame = self.sceneView.bounds
+        drawLayer.frame = self.sceneView.frame
     }
     
     // MARK: - ARSCNViewDelegate
