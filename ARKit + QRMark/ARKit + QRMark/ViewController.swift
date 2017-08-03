@@ -9,6 +9,7 @@
 import ARKit
 import UIKit
 import Vision
+import simd
 
 class ViewController: UIViewController, ARSCNViewDelegate {
     
@@ -47,6 +48,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return earth
     }()
     
+    var camera = SCNCamera()
+    var cameraNode = SCNNode()
     var topLeftPointNode = SCNNode()
     var topRightPointNode = SCNNode()
     var bottomLeftPointNode = SCNNode()
@@ -58,6 +61,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     private let bufferQueue = DispatchQueue(label: "com.evgeniybokhan.BufferQueue",
                                             qos: .userInteractive,
                                             attributes: .concurrent)
+    
+    private let pnpSolver = PnPSolver()
     
     @IBAction func showButton(_ sender: UIButton) {
         addEarthNode()
@@ -106,6 +111,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.preferredFramesPerSecond = 60
         sceneView.contentScaleFactor = 1.3
         //sceneView.showsStatistics = true
+        
+        let camera = SCNCamera()
+        let cameraNode = SCNNode()
+        cameraNode.camera = camera
+        sceneView.scene.rootNode.addChildNode(cameraNode)
         
         fixSceneViewPosition()
         
@@ -211,6 +221,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         rotateClouds.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
         rotateClouds.repeatCount = Float.infinity;
         cloudNode.addAnimation(rotateClouds, forKey:"slowly move the clouds")
+        
+        sceneView.scene.rootNode.addChildNode(axesNode)
     }
     
     // MARK: - Vision
@@ -244,13 +256,54 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 path.addLine(to: self.qrCode.bottomLeftCorner.screenPosition)
                 path.addLine(to: self.qrCode.topLeftCorner.screenPosition)
                 
-                //    v1 --------------v0
-                //    |             __/
-                //    |          __/
-                //    |       __/
-                //    |    __/
-                //    | __/
-                //    v2
+                //    v0 --------------v3
+                //    |             __/ |
+                //    |          __/    |
+                //    |       __/       |
+                //    |    __/          |
+                //    | __/             |
+                //    v1 --------------v2
+                
+                let imageResolution = self.session.currentFrame?.camera.imageResolution
+                let viewSize = self.sceneView.bounds.size
+                
+                let xCoef = (imageResolution?.width)! / viewSize.width
+                let yCoef = (imageResolution?.height)! / viewSize.height
+                
+                let _c0 = CGPoint(x: self.qrCode.topLeftCorner.screenPosition.x * xCoef, y: self.qrCode.topLeftCorner.screenPosition.y * yCoef)
+                let _c1 = CGPoint(x: self.qrCode.bottomLeftCorner.screenPosition.x * xCoef, y: self.qrCode.bottomLeftCorner.screenPosition.y * yCoef)
+                let _c2 = CGPoint(x: self.qrCode.bottomRightCorner.screenPosition.x * xCoef, y: self.qrCode.bottomRightCorner.screenPosition.y * yCoef)
+                let _c3 = CGPoint(x: self.qrCode.topRightCorner.screenPosition.x * xCoef, y: self.qrCode.topRightCorner.screenPosition.y * yCoef)
+                
+                let half_of_real_size: Float = 0.05 // 10sm / 2 = 0.05m 
+                
+                let f_x = self.session.currentFrame?.camera.intrinsics.columns.0.x // Focal length in x axis
+                let f_y = self.session.currentFrame?.camera.intrinsics.columns.1.y // Focal length in y axis
+                let c_x = self.session.currentFrame?.camera.intrinsics.columns.2.x // Camera primary point x
+                let c_y = self.session.currentFrame?.camera.intrinsics.columns.2.y // Camera primary point y
+                
+                self.pnpSolver.processCorners(_c0, _c1, _c2, _c3, half_of_real_size, f_x!, f_y!, c_x!, c_y!)
+                
+                let qw = self.pnpSolver.qw
+                let qx = self.pnpSolver.qx
+                let qy = -self.pnpSolver.qy
+                let qz = -self.pnpSolver.qz
+                let t0 = self.pnpSolver.t0
+                let t1 = -self.pnpSolver.t1
+                let t2 = -self.pnpSolver.t2
+
+                let r1 = vector_float4(x: 1 - 2*qy*qy - 2*qz*qz, y: (2*qx*qy + 2*qz*qw), z: (2*qx*qz - 2*qy*qw), w: 0)
+                let r2 = vector_float4(x: (2*qx*qy - 2*qz*qw), y: 1 - 2*qx*qx - 2*qz*qz, z: (2*qy*qz + 2*qx*qw), w: 0)
+                let r3 = vector_float4(x: (2*qx*qz + 2*qy*qw), y: (2*qy*qz - 2*qx*qw), z: 1 - 2*qx*qx - 2*qy*qy, w: 0)
+                let r4 = vector_float4(x: t0, y: t1, z: t2, w: 1)
+
+                let modelMatrix = matrix_float4x4(r1, r2, r3, r4)
+                
+                let cameraTransform = self.session.currentFrame?.camera.transform
+               
+                let pose = SCNMatrix4(matrix_multiply(cameraTransform!, modelMatrix))
+
+                self.axesNode.transform = pose
             }
             self.drawLayer.path = path
         }
@@ -293,12 +346,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @objc private func addEarthNode() {
-        addNodeAtQRCorner(qrCorner: qrCode.bottomLeftCorner)
-        addNodeAtQRCorner(qrCorner: qrCode.topLeftCorner)
-        addNodeAtQRCorner(qrCorner: qrCode.topRightCorner)
-        
-        bottomLeftPointNode.addChildNode(axesNode)
-        bottomLeftPointNode.addChildNode(earthNode)
+        axesNode.addChildNode(earthNode)
     }
     
     // MARK: - Focus Square

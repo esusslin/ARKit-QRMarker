@@ -7,7 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		083C9F691F2F5EA600E4902F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F681F2F5EA600E4902F /* Foundation.framework */; };
+		083C9F6B1F2F5EAD00E4902F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F6A1F2F5EAD00E4902F /* UIKit.framework */; };
+		083C9F6D1F2F5EB700E4902F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F6C1F2F5EB700E4902F /* QuartzCore.framework */; };
+		083C9F6F1F2F5EBF00E4902F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F6E1F2F5EBF00E4902F /* AVFoundation.framework */; };
+		083C9F711F2F5EC600E4902F /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F701F2F5EC600E4902F /* AssetsLibrary.framework */; };
+		083C9F731F2F5ECC00E4902F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F721F2F5ECB00E4902F /* Accelerate.framework */; };
+		083C9F751F2F5ED400E4902F /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F741F2F5ED300E4902F /* CoreVideo.framework */; };
+		083C9F771F2F5EDB00E4902F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F761F2F5EDB00E4902F /* CoreMedia.framework */; };
+		083C9F791F2F5EE400E4902F /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F781F2F5EE400E4902F /* CoreImage.framework */; };
+		083C9F7B1F2F5EEF00E4902F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F7A1F2F5EEF00E4902F /* CoreGraphics.framework */; };
+		083C9F7D1F2F5EF600E4902F /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F7C1F2F5EF600E4902F /* ImageIO.framework */; };
+		083C9F821F2F618F00E4902F /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 083C9F811F2F617F00E4902F /* opencv2.framework */; };
 		084753811F2CE8B2002606DD /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084753801F2CE8B2002606DD /* QRCode.swift */; };
+		08AFE9C51F30B35F00EC01DD /* MathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AFE9C41F30B35F00EC01DD /* MathUtilities.swift */; };
 		08E853FD1F0BE83D000E414F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E853FC1F0BE83D000E414F /* AppDelegate.swift */; };
 		08E853FF1F0BE83D000E414F /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 08E853FE1F0BE83D000E414F /* art.scnassets */; };
 		08E854011F0BE83D000E414F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E854001F0BE83D000E414F /* ViewController.swift */; };
@@ -18,6 +31,7 @@
 		08E8541F1F0BE83D000E414F /* ARKit___QRMarkUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E8541E1F0BE83D000E414F /* ARKit___QRMarkUITests.swift */; };
 		08E8542D1F0BE88E000E414F /* SCNUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E8542C1F0BE88E000E414F /* SCNUtils.swift */; };
 		08E8542F1F0BE8B7000E414F /* FocusSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E8542E1F0BE8B7000E414F /* FocusSquare.swift */; };
+		08F6F6A51F339F5D00C5591E /* PnPSolver.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08F6F6A41F339F5D00C5591E /* PnPSolver.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +52,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		083C9F611F2F5D7700E4902F /* ARKit + QRMark-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ARKit + QRMark-Bridging-Header.h"; sourceTree = "<group>"; };
+		083C9F681F2F5EA600E4902F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		083C9F6A1F2F5EAD00E4902F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		083C9F6C1F2F5EB700E4902F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		083C9F6E1F2F5EBF00E4902F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		083C9F701F2F5EC600E4902F /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		083C9F721F2F5ECB00E4902F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		083C9F741F2F5ED300E4902F /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		083C9F761F2F5EDB00E4902F /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		083C9F781F2F5EE400E4902F /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		083C9F7A1F2F5EEF00E4902F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		083C9F7C1F2F5EF600E4902F /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		083C9F811F2F617F00E4902F /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		084753801F2CE8B2002606DD /* QRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCode.swift; sourceTree = "<group>"; };
+		08AFE9C41F30B35F00EC01DD /* MathUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtilities.swift; sourceTree = "<group>"; };
 		08E853F91F0BE83D000E414F /* ARKit + QRMark.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ARKit + QRMark.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		08E853FC1F0BE83D000E414F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		08E853FE1F0BE83D000E414F /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -55,6 +83,8 @@
 		08E854201F0BE83D000E414F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08E8542C1F0BE88E000E414F /* SCNUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SCNUtils.swift; sourceTree = "<group>"; };
 		08E8542E1F0BE8B7000E414F /* FocusSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSquare.swift; sourceTree = "<group>"; };
+		08F6F6A31F339F5B00C5591E /* PnPSolver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PnPSolver.h; sourceTree = "<group>"; };
+		08F6F6A41F339F5D00C5591E /* PnPSolver.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PnPSolver.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +92,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				083C9F7D1F2F5EF600E4902F /* ImageIO.framework in Frameworks */,
+				083C9F7B1F2F5EEF00E4902F /* CoreGraphics.framework in Frameworks */,
+				083C9F791F2F5EE400E4902F /* CoreImage.framework in Frameworks */,
+				083C9F771F2F5EDB00E4902F /* CoreMedia.framework in Frameworks */,
+				083C9F751F2F5ED400E4902F /* CoreVideo.framework in Frameworks */,
+				083C9F731F2F5ECC00E4902F /* Accelerate.framework in Frameworks */,
+				083C9F821F2F618F00E4902F /* opencv2.framework in Frameworks */,
+				083C9F711F2F5EC600E4902F /* AssetsLibrary.framework in Frameworks */,
+				083C9F6F1F2F5EBF00E4902F /* AVFoundation.framework in Frameworks */,
+				083C9F6D1F2F5EB700E4902F /* QuartzCore.framework in Frameworks */,
+				083C9F6B1F2F5EAD00E4902F /* UIKit.framework in Frameworks */,
+				083C9F691F2F5EA600E4902F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +124,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		083C9F651F2F5DD600E4902F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				083C9F811F2F617F00E4902F /* opencv2.framework */,
+				083C9F7C1F2F5EF600E4902F /* ImageIO.framework */,
+				083C9F7A1F2F5EEF00E4902F /* CoreGraphics.framework */,
+				083C9F781F2F5EE400E4902F /* CoreImage.framework */,
+				083C9F761F2F5EDB00E4902F /* CoreMedia.framework */,
+				083C9F741F2F5ED300E4902F /* CoreVideo.framework */,
+				083C9F721F2F5ECB00E4902F /* Accelerate.framework */,
+				083C9F701F2F5EC600E4902F /* AssetsLibrary.framework */,
+				083C9F6E1F2F5EBF00E4902F /* AVFoundation.framework */,
+				083C9F6C1F2F5EB700E4902F /* QuartzCore.framework */,
+				083C9F6A1F2F5EAD00E4902F /* UIKit.framework */,
+				083C9F681F2F5EA600E4902F /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		08E853F01F0BE83D000E414F = {
 			isa = PBXGroup;
 			children = (
@@ -89,6 +150,7 @@
 				08E854121F0BE83D000E414F /* ARKit + QRMarkTests */,
 				08E8541D1F0BE83D000E414F /* ARKit + QRMarkUITests */,
 				08E853FA1F0BE83D000E414F /* Products */,
+				083C9F651F2F5DD600E4902F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,12 +171,16 @@
 				08E853FE1F0BE83D000E414F /* art.scnassets */,
 				08E854001F0BE83D000E414F /* ViewController.swift */,
 				08E8542C1F0BE88E000E414F /* SCNUtils.swift */,
+				08AFE9C41F30B35F00EC01DD /* MathUtilities.swift */,
 				08E8542E1F0BE8B7000E414F /* FocusSquare.swift */,
 				084753801F2CE8B2002606DD /* QRCode.swift */,
+				08F6F6A31F339F5B00C5591E /* PnPSolver.h */,
+				08F6F6A41F339F5D00C5591E /* PnPSolver.mm */,
 				08E854021F0BE83D000E414F /* Main.storyboard */,
 				08E854051F0BE83D000E414F /* Assets.xcassets */,
 				08E854071F0BE83D000E414F /* LaunchScreen.storyboard */,
 				08E8540A1F0BE83D000E414F /* Info.plist */,
+				083C9F611F2F5D7700E4902F /* ARKit + QRMark-Bridging-Header.h */,
 			);
 			path = "ARKit + QRMark";
 			sourceTree = "<group>";
@@ -205,6 +271,7 @@
 				TargetAttributes = {
 					08E853F81F0BE83D000E414F = {
 						CreatedOnToolsVersion = 9.0;
+						LastSwiftMigration = 0900;
 					};
 					08E8540E1F0BE83D000E414F = {
 						CreatedOnToolsVersion = 9.0;
@@ -269,6 +336,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08F6F6A51F339F5D00C5591E /* PnPSolver.mm in Sources */,
+				08AFE9C51F30B35F00EC01DD /* MathUtilities.swift in Sources */,
 				08E854011F0BE83D000E414F /* ViewController.swift in Sources */,
 				08E8542F1F0BE8B7000E414F /* FocusSquare.swift in Sources */,
 				08E853FD1F0BE83D000E414F /* AppDelegate.swift in Sources */,
@@ -435,11 +504,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 63TG84TE66;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ARKit\\ +\\ QRMark",
+					"$(PROJECT_DIR)/ARKit\\ +\\ QRMark",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "ARKit + QRMark/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.evgeniy.bokhan.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ARKit + QRMark/ARKit + QRMark-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -449,11 +528,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 63TG84TE66;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ARKit\\ +\\ QRMark",
+					"$(PROJECT_DIR)/ARKit\\ +\\ QRMark",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "ARKit + QRMark/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.evgeniy.bokhan.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ARKit + QRMark/ARKit + QRMark-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
